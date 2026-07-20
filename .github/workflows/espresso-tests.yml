@@ -1,0 +1,75 @@
+name: Espresso Instrumented Tests
+
+# Hanya berjalan jika dipanggil manual dari tab Actions di GitHub
+# Tidak otomatis berjalan saat push
+on:
+  workflow_dispatch:
+    inputs:
+      api_level:
+        description: 'Android API Level untuk emulator'
+        required: true
+        default: '29'
+        type: choice
+        options: ['28', '29', '30']
+
+jobs:
+  espresso:
+    name: Espresso Tests (API ${{ github.event.inputs.api_level }})
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: AVD cache
+        uses: actions/cache@v4
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ github.event.inputs.api_level }}
+
+      - name: Create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ github.event.inputs.api_level }}
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          script: echo "Generated AVD snapshot for caching."
+
+      - name: Run Espresso tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ github.event.inputs.api_level }}
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: ./gradlew connectedDebugAndroidTest --no-daemon
+
+      - name: Upload Espresso test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: espresso-results-api${{ github.event.inputs.api_level }}
+          path: app/build/reports/androidTests/
