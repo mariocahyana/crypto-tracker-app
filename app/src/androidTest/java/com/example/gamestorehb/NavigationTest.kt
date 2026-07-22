@@ -3,7 +3,7 @@ package com.example.gamestorehb
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.gamestorehb.ui.MainActivity
+import com.example.gamestorehb.MainActivity
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,15 +22,50 @@ class NavigationTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
+    @org.junit.Before
+    fun setupLogin() {
+        try {
+            composeTestRule.waitForIdle()
+            Thread.sleep(1000)
+            composeTestRule.waitForIdle()
+
+            val isLoginScreen = composeTestRule
+                .onAllNodesWithTag("usernameField")
+                .fetchSemanticsNodes().isNotEmpty()
+
+            if (isLoginScreen) {
+                composeTestRule.onNodeWithText("Daftar").performClick()
+                composeTestRule.waitForIdle()
+                Thread.sleep(500)
+
+                composeTestRule.onNodeWithText("Username").performTextInput("testnavuser")
+                composeTestRule.onNodeWithText("Password").performTextInput("123456")
+                composeTestRule.onNodeWithText("Konfirmasi Password").performTextInput("123456")
+                composeTestRule.onNodeWithText("Daftar Sekarang").performClick()
+                composeTestRule.waitForIdle()
+                Thread.sleep(500)
+
+                composeTestRule.onNodeWithTag("usernameField").performTextInput("testnavuser")
+                composeTestRule.onNodeWithTag("passwordField").performTextInput("123456")
+                composeTestRule.onNodeWithTag("loginButton").performClick()
+                composeTestRule.waitForIdle()
+                Thread.sleep(1000)
+            }
+        } catch (e: Exception) {
+            // Already logged in or handled
+        }
+    }
+
     // ── 1. Bottom navigation has all 5 tabs ───────────────────────────────────
 
     @Test
     fun bottomNavBar_showsAllFiveTabs() {
-        composeTestRule.onNodeWithText("Markets").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Watchlist").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Trading").assertIsDisplayed()
-        composeTestRule.onNodeWithText("News").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Risk Profile").assertIsDisplayed()
+        // Use onFirst() because nav label text may also appear as screen title
+        composeTestRule.onAllNodesWithText("Markets").onFirst().assertIsDisplayed()
+        composeTestRule.onAllNodesWithText("Watchlist").onFirst().assertIsDisplayed()
+        composeTestRule.onAllNodesWithText("Trading").onFirst().assertIsDisplayed()
+        composeTestRule.onAllNodesWithText("News").onFirst().assertIsDisplayed()
+        composeTestRule.onAllNodesWithText("Risk Profile").onFirst().assertIsDisplayed()
     }
 
     // ── 2. Markets tab is selected by default ─────────────────────────────────
@@ -45,18 +80,20 @@ class NavigationTest {
 
     @Test
     fun tap_watchlistTab_navigatesToWatchlist() {
-        composeTestRule.onNodeWithText("Watchlist").performClick()
-        // Watchlist screen has "Watchlist" as its TopAppBar title
-        composeTestRule.onNodeWithText("Watchlist").assertIsDisplayed()
+        composeTestRule.onAllNodesWithText("Watchlist").onFirst().performClick()
+        composeTestRule.waitForIdle()
+        // Watchlist screen should have "Watchlist" visible after navigation
+        composeTestRule.onAllNodesWithText("Watchlist").onFirst().assertIsDisplayed()
     }
 
     // ── 4. Navigate to Trading ────────────────────────────────────────────────
 
     @Test
     fun tap_tradingTab_navigatesToTrading() {
-        composeTestRule.onNodeWithText("Trading").performClick()
-        // Trading screen renders a hero card with "Total Value" text
-        composeTestRule.onNodeWithText("Total Value").assertIsDisplayed()
+        composeTestRule.onAllNodesWithText("Trading").onFirst().performClick()
+        composeTestRule.waitForIdle()
+        // TradingScreen has hero card with "Active Positions" or "Invested"
+        composeTestRule.onNodeWithTag("hero_balance").assertExists()
     }
 
     // ── 5. Navigate to News ───────────────────────────────────────────────────

@@ -51,7 +51,7 @@ class DetailViewModel @Inject constructor(
     val virtualBalance: StateFlow<Double> = userPreferences.virtualBalance.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = 0.0
+        initialValue = 10_000.0  // Match UserPreferences default so UI shows correct balance immediately
     )
 
     init {
@@ -108,7 +108,12 @@ class DetailViewModel @Inject constructor(
 
     /**
      * Toggles bookmark state for the current coin.
-     * If already bookmarked → removes it. If not → saves it.
+     *
+     * If already bookmarked:
+     *   - Has holdings → keep Room record (protect trading data), just remove bookmark flag
+     *   - No holdings  → delete from Room entirely
+     * If not bookmarked:
+     *   - Save to Room with isBookmarked = true
      */
     fun toggleBookmark() {
         val currentState = _detailState.value
@@ -118,9 +123,18 @@ class DetailViewModel @Inject constructor(
             val viewState = currentState.data
             val coin = viewState.coin
             if (coin.isBookmarked) {
-                removeCoinUseCase(coin.id)
-                _detailState.value = UiState.Success(viewState.copy(coin = coin.copy(isBookmarked = false)))
-                _bookmarkMessage.value = "${coin.name} removed from portfolio"
+                if (coin.holdings > 0.0) {
+                    // Bug 5 fix: coin has active holdings — don't delete from Room!
+                    // Just clear the bookmark flag by saving with isBookmarked = false.
+                    saveCoinUseCase(coin.copy(isBookmarked = false))
+                    _detailState.value = UiState.Success(viewState.copy(coin = coin.copy(isBookmarked = false)))
+                    _bookmarkMessage.value = "${coin.name} removed from watchlist (position kept)"
+                } else {
+                    // No holdings — safe to delete entirely
+                    removeCoinUseCase(coin.id)
+                    _detailState.value = UiState.Success(viewState.copy(coin = coin.copy(isBookmarked = false)))
+                    _bookmarkMessage.value = "${coin.name} removed from portfolio"
+                }
             } else {
                 saveCoinUseCase(coin)
                 _detailState.value = UiState.Success(viewState.copy(coin = coin.copy(isBookmarked = true)))

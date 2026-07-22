@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -190,6 +191,7 @@ private fun BalanceHeroCard(
             .padding(16.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(Brush.verticalGradient(gradientColors))
+            .testTag("hero_balance")
             .padding(24.dp)
     ) {
         Column {

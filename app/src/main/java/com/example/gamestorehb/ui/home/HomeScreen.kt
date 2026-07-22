@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -91,7 +92,8 @@ fun HomeScreen(
                         ) { coin ->
                             CoinListItem(
                                 coin = coin,
-                                onClick = { onCoinClick(coin.id) }
+                                onClick = { onCoinClick(coin.id) },
+                                modifier = Modifier.testTag("coin_list_item")
                             )
                             HorizontalDivider(
                                 color = OutlineVariant,
@@ -176,7 +178,9 @@ private fun HomeHeader(
                 focusedTextColor = TextPrimary,
                 unfocusedTextColor = TextPrimary
             ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("search_field")
         )
     }
 }

@@ -27,6 +27,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
@@ -100,7 +101,7 @@ fun LoginScreen(
                             Icon(Icons.Filled.Person, contentDescription = null, tint = Color(0xFF4A9EF5))
                         },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag("usernameField"),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                         keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                         colors = authTextFieldColors()
@@ -127,7 +128,7 @@ fun LoginScreen(
                         },
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag("passwordField"),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(onDone = {
                             focusManager.clearFocus()
@@ -144,7 +145,8 @@ fun LoginScreen(
                             fontSize = 13.sp,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 10.dp),
+                                .padding(top = 10.dp)
+                                .testTag("errorMessage"),
                             textAlign = TextAlign.Center
                         )
                     }
@@ -157,7 +159,8 @@ fun LoginScreen(
                         onClick = { viewModel.login(username, password) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(52.dp),
+                            .height(52.dp)
+                            .testTag("loginButton"),
                         enabled = !uiState.isLoading && isFormValid,
                         shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4A9EF5))

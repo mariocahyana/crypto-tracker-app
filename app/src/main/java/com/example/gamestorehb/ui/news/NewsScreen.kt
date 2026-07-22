@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -76,6 +77,7 @@ fun NewsScreen(
                 is UiState.Error -> ErrorView(message = uiState.message, onRetry = { viewModel.fetchNews() })
                 is UiState.Success -> {
                     LazyColumn(
+                        modifier = Modifier.testTag("news_list"),
                         contentPadding = PaddingValues(bottom = 100.dp)
                     ) {
                         items(uiState.data, key = { it.id }) { article ->
@@ -103,6 +105,7 @@ private fun NewsArticleItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
+            .testTag("news_item")
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = SurfaceVariant)
@@ -181,6 +184,7 @@ private fun SentimentBadge(sentiment: Sentiment) {
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
             .background(color.copy(alpha = 0.12f))
+            .testTag("sentiment_badge")
             .padding(horizontal = 8.dp, vertical = 4.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {

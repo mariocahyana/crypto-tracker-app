@@ -59,13 +59,22 @@ class TradeCoinUseCase @Inject constructor(
 
                 val newBalance = currentBalance + amountUsd
                 val newHoldings = maxOf(0.0, coin.holdings - amountCrypto)
-                
-                // Average buy price does not change on sell
-                val newAvgPrice = if (newHoldings <= 0.000001) 0.0 else coin.averageBuyPrice
 
-                // Update DataStore and Room
                 userPreferences.updateVirtualBalance(newBalance)
-                repository.updateCoinHoldings(coin.id, newHoldings, newAvgPrice)
+
+                if (newHoldings <= 0.000001) {
+                    // Sold all holdings
+                    if (coin.isBookmarked) {
+                        // Keep record in Room (user wants to watch it), just clear holdings
+                        repository.updateCoinHoldings(coin.id, 0.0, 0.0)
+                    } else {
+                        // Not bookmarked — remove ghost record from Room entirely
+                        repository.removeCoin(coin.id)
+                    }
+                } else {
+                    // Partial sell — average buy price does not change on sell
+                    repository.updateCoinHoldings(coin.id, newHoldings, coin.averageBuyPrice)
+                }
                 Result.success(Unit)
             }
         }

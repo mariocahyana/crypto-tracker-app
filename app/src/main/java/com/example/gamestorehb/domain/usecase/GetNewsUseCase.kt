@@ -9,11 +9,11 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
-class GetNewsUseCase @Inject constructor(
+open class GetNewsUseCase @Inject constructor(
     private val repository: NewsRepository,
     private val analyzeSentiment: AnalyzeSentimentUseCase
 ) {
-    operator fun invoke(): Flow<List<NewsArticle>> {
+    open operator fun invoke(): Flow<List<NewsArticle>> {
         return repository.getNews().map { articles ->
             coroutineScope {
                 articles.map { article ->

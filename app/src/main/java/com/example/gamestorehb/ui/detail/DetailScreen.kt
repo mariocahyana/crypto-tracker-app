@@ -26,6 +26,7 @@ import java.util.Locale
 
 import com.example.gamestorehb.domain.usecase.TradeType
 import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.ui.platform.testTag
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,7 +84,8 @@ fun DetailScreen(
                     icon = { Icon(Icons.Filled.SwapHoriz, "Trade") },
                     text = { Text("Trade") },
                     containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.testTag("trade_fab")
                 )
             }
         }

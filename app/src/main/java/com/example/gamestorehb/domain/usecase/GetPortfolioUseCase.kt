@@ -9,8 +9,11 @@ import javax.inject.Inject
  * Use case: Observes the user's saved portfolio from Room DB as a reactive Flow.
  * Drives the PortfolioScreen with live updates whenever the local DB changes.
  */
-class GetPortfolioUseCase @Inject constructor(
+open class GetPortfolioUseCase @Inject constructor(
     private val repository: CoinRepository
 ) {
-    operator fun invoke(): Flow<List<Coin>> = repository.getPortfolioCoins()
+    /**
+     * Emits a real-time stream of all portfolio coins (holdings >= 0).
+     */
+    open operator fun invoke(): Flow<List<Coin>> = repository.getPortfolioCoins()
 }
