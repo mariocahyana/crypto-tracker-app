@@ -103,6 +103,9 @@ dependencies {
     // --- Coil (Image Loading) ---
     implementation("io.coil-kt:coil-compose:2.7.0")
 
+    // --- Jsoup (HTML Parsing) ---
+    implementation("org.jsoup:jsoup:1.17.2")
+
     // --- Testing ---
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")

@@ -2,14 +2,23 @@ package com.example.gamestorehb.ui.risk
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.gamestorehb.data.local.datastore.UserPreferences
+import com.example.gamestorehb.ui.auth.AuthViewModel
 
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -18,7 +27,10 @@ import androidx.compose.foundation.verticalScroll
 @Composable
 fun RiskProfileScreen(
     onComplete: () -> Unit,
-    viewModel: RiskProfileViewModel = hiltViewModel()
+    onLogout: () -> Unit,
+    viewModel: RiskProfileViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel = hiltViewModel(),
+    userPreferences: UserPreferences = androidx.hilt.navigation.compose.hiltViewModel<AuthViewModel>().let { UserPreferences(androidx.compose.ui.platform.LocalContext.current) }
 ) {
     val answers by viewModel.answers.collectAsStateWithLifecycle()
     val isComplete by viewModel.isComplete.collectAsStateWithLifecycle()
@@ -31,9 +43,43 @@ fun RiskProfileScreen(
     }
 
     Scaffold(
+        modifier = Modifier.testTag("risk_profile_screen"),
         topBar = {
             TopAppBar(
                 title = { Text("Risk Profiling") },
+                actions = {
+                    val username by userPreferences.loggedInUsername.collectAsStateWithLifecycle(initialValue = "")
+                    
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        Icon(
+                            Icons.Filled.Person,
+                            contentDescription = "Profile",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = username,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        IconButton(onClick = {
+                            authViewModel.logout()
+                            onLogout()
+                        }) {
+                            Icon(
+                                Icons.Filled.Logout,
+                                contentDescription = "Logout",
+                                tint = Color(0xFFFF6B6B)
+                            )
+                        }
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
                 )

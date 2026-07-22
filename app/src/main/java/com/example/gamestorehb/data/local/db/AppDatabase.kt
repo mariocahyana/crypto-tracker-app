@@ -3,23 +3,28 @@ package com.example.gamestorehb.data.local.db
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.example.gamestorehb.data.local.dao.CoinDao
+import com.example.gamestorehb.data.local.dao.UserDao
 import com.example.gamestorehb.data.local.entity.CoinEntity
+import com.example.gamestorehb.data.local.entity.UserEntity
 
 /**
- * Room Database — the main local persistence layer for the portfolio.
+ * Room Database — the main local persistence layer.
  *
- * Version: 1
- * Entities: [CoinEntity]
+ * Version history:
+ *  v1 → v2: (initial portfolio schema)
+ *  v2 → v3: Added [UserEntity] table for local authentication
  *
- * Increment version and provide a Migration when the schema changes.
+ * Using fallbackToDestructiveMigration in DatabaseModule so we
+ * don't need to write explicit migrations during development.
  */
 @Database(
-    entities = [CoinEntity::class],
-    version = 2,
+    entities = [CoinEntity::class, UserEntity::class],
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun coinDao(): CoinDao
+    abstract fun userDao(): UserDao
 
     companion object {
         const val DATABASE_NAME = "crypto_portfolio_db"

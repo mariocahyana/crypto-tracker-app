@@ -34,4 +34,9 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideCoinDao(database: AppDatabase): CoinDao = database.coinDao()
+
+    @Provides
+    @Singleton
+    fun provideUserDao(database: AppDatabase): com.example.gamestorehb.data.local.dao.UserDao = database.userDao()
 }
+

@@ -24,6 +24,12 @@ sealed class Screen(val route: String) {
 
     /** Market News & Sentiment Analysis. */
     data object News : Screen("news")
+
+    /** Login screen — shown when user is not authenticated. */
+    data object Login : Screen("login")
+
+    /** Register screen — create a new account. */
+    data object Register : Screen("register")
 }
 
 /** Typed nav argument key constants. */

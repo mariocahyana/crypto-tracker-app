@@ -34,7 +34,7 @@ import javax.inject.Singleton
 object NetworkModule {
 
     private const val BASE_URL = "https://api.coingecko.com/api/v3/"
-    private const val TIMEOUT_SECONDS = 30L
+    private const val TIMEOUT_SECONDS = 10L
     private const val CACHE_SIZE_BYTES = 10L * 1024 * 1024 // 10 MB
     private const val CACHE_MAX_AGE_SECONDS = 60           // fresh for 60s
     private const val CACHE_STALE_SECONDS = 86400          // stale-if-error: 24h
@@ -49,7 +49,7 @@ object NetworkModule {
     @Singleton
     fun provideLoggingInterceptor(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            level = HttpLoggingInterceptor.Level.NONE // Disabled for performance
         }
     }
 

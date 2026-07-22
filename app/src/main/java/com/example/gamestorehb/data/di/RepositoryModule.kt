@@ -29,4 +29,11 @@ abstract class RepositoryModule {
     abstract fun bindNewsRepository(
         newsRepositoryImpl: com.example.gamestorehb.data.repository.NewsRepositoryImpl
     ): com.example.gamestorehb.domain.repository.NewsRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthRepository(
+        authRepositoryImpl: com.example.gamestorehb.data.repository.AuthRepositoryImpl
+    ): com.example.gamestorehb.domain.repository.AuthRepository
 }
+

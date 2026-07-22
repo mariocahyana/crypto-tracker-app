@@ -120,11 +120,12 @@ fun CoinListItem(
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
+private val currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US)
+
 private fun formatPrice(price: Double): String {
-    val formatter = NumberFormat.getCurrencyInstance(Locale.US)
     return when {
-        price >= 1_000 -> formatter.format(price).replace(",", ",")
-        price >= 1 -> formatter.format(price)
+        price >= 1_000 -> currencyFormatter.format(price).replace(",", ",")
+        price >= 1 -> currencyFormatter.format(price)
         else -> "$${String.format(Locale.US, "%.6f", price)}"
     }
 }

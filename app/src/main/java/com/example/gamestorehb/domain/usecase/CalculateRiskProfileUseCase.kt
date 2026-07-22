@@ -3,7 +3,7 @@ package com.example.gamestorehb.domain.usecase
 import com.example.gamestorehb.domain.model.RiskProfile
 import javax.inject.Inject
 
-class CalculateRiskProfileUseCase @Inject constructor() {
+class   CalculateRiskProfileUseCase @Inject constructor() {
     
     /**
      * Calculates the user's risk score based on an array of answers.

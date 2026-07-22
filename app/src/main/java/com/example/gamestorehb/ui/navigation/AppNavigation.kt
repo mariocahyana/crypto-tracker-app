@@ -19,26 +19,36 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
+import com.example.gamestorehb.data.local.datastore.UserPreferences
+import com.example.gamestorehb.ui.auth.AuthViewModel
+import com.example.gamestorehb.ui.auth.LoginScreen
+import com.example.gamestorehb.ui.auth.RegisterScreen
 import com.example.gamestorehb.ui.detail.DetailScreen
 import com.example.gamestorehb.ui.home.HomeScreen
 import com.example.gamestorehb.ui.portfolio.PortfolioScreen
 import com.example.gamestorehb.ui.trading.TradingScreen
 import com.example.gamestorehb.ui.news.NewsScreen
 import com.example.gamestorehb.ui.theme.*
+import javax.inject.Inject
 
 /**
  * Root navigation composable — sets up the NavHost with bottom navigation.
  * The Detail screen is outside the bottom nav bar (full-screen push navigation).
  */
 @Composable
-fun AppNavigation() {
+fun AppNavigation(userPreferences: UserPreferences) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+
+    // Observe login state from DataStore
+    val loggedInUserId by userPreferences.loggedInUserId.collectAsState(initial = -1)
+    val startDestination = if (loggedInUserId != -1) Screen.Home.route else Screen.Login.route
 
     // Routes that show the bottom nav bar
     val bottomNavRoutes = listOf(Screen.Home.route, Screen.Portfolio.route, Screen.Trading.route, Screen.News.route, Screen.RiskProfile.route)
@@ -65,7 +75,7 @@ fun AppNavigation() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Home.route,
+            startDestination = startDestination,
             modifier = Modifier.padding(innerPadding),
             enterTransition = {
                 fadeIn(animationSpec = tween(200)) +
@@ -141,7 +151,36 @@ fun AppNavigation() {
                         navController.navigate(Screen.Portfolio.route) {
                             popUpTo(Screen.RiskProfile.route) { inclusive = true }
                         }
+                    },
+                    onLogout = {
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
                     }
+                )
+            }
+
+            // ── Auth Screens (no bottom bar) ──────────────────────────────
+            composable(Screen.Login.route) {
+                LoginScreen(
+                    onLoginSuccess = {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Login.route) { inclusive = true }
+                        }
+                    },
+                    onNavigateToRegister = {
+                        navController.navigate(Screen.Register.route)
+                    }
+                )
+            }
+
+            composable(Screen.Register.route) {
+                RegisterScreen(
+                    onRegisterSuccess = {
+                        // After register, go back to login so user can sign in
+                        navController.popBackStack()
+                    },
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
         }
