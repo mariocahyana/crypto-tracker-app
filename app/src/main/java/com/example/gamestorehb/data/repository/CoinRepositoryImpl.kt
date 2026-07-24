@@ -40,8 +40,14 @@ class CoinRepositoryImpl @Inject constructor(
     override suspend fun getCoinById(coinId: String): Result<Coin> {
         return fetchWithRetry {
             val dto = api.getCoinById(coinId)
-            val isBookmarked = dao.isCoinBookmarked(coinId) > 0
-            listOf(dto.toDomain().copy(isBookmarked = isBookmarked))
+            val localCoin = dao.getCoinById(coinId) // Fetch local data (holdings, avg price)
+            
+            val coin = dto.toDomain().copy(
+                isBookmarked = localCoin?.isBookmarked ?: false,
+                holdings = localCoin?.holdings ?: 0.0,
+                averageBuyPrice = localCoin?.averageBuyPrice ?: 0.0
+            )
+            listOf(coin)
         }.map { it.first() }
     }
 

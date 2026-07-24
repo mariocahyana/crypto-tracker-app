@@ -66,7 +66,7 @@ fun CoinEntity.toDomain(): Coin = Coin(
     high24h = high24h,
     low24h = low24h,
     circulatingSupply = circulatingSupply,
-    isBookmarked = true,
+    isBookmarked = isBookmarked,
     holdings = holdings,
     averageBuyPrice = averageBuyPrice
 )
@@ -90,5 +90,6 @@ fun Coin.toEntity(): CoinEntity = CoinEntity(
     low24h = low24h,
     circulatingSupply = circulatingSupply,
     holdings = holdings,
-    averageBuyPrice = averageBuyPrice
+    averageBuyPrice = averageBuyPrice,
+    isBookmarked = isBookmarked
 )

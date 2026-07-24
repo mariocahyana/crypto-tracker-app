@@ -26,5 +26,7 @@ data class CoinEntity(
     /** Amount of coin owned by the user (Paper Trading) */
     val holdings: Double = 0.0,
     /** Average buy price in USD for calculating PnL (Paper Trading) */
-    val averageBuyPrice: Double = 0.0
+    val averageBuyPrice: Double = 0.0,
+    /** Whether the user has bookmarked this coin for their watchlist */
+    val isBookmarked: Boolean = true
 )

@@ -354,7 +354,9 @@ private fun TradeBottomSheet(
                     keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal
                 ),
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("trade_amount_field")
             )
             
             Spacer(modifier = Modifier.height(8.dp))
@@ -376,7 +378,9 @@ private fun TradeBottomSheet(
                     val amount = amountText.toDoubleOrNull() ?: 0.0
                     onTrade(if (isBuy) TradeType.BUY else TradeType.SELL, amount)
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(if (isBuy) "confirm_buy_button" else "confirm_sell_button"),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (isBuy) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
                 )
